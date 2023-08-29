@@ -1,0 +1,1 @@
+pydb/bin/jupyter notebook

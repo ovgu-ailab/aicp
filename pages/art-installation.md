@@ -63,7 +63,8 @@ Finally, we used https://www.artsteps.com/ to exhibit our generated pieces. On t
 
 The exhibition can be viewed on a screen and controlled by walking around in the virtual museum. In addition, an App is available. This App can be used in combination with Cardboard VR goggles to view the exhibition in 3D VR. Sadly, the App is not compatible with "dedicated" VR headsets like the Meta Quest.
 
-Our exhibition features the artworks in the styles of various Dutch artists, Abs pictures of us as well as paintings of us. In addition, two "guess the AI generated pictures" exhibitions feature show and generated artworks from Celina and Johannes:
+Our exhibition features the artworks in the styles of various Dutch artists, Abs pictures of us as well as paintings of us. In addition, two "guess the AI generated pictures" exhibitions feature show and generated artworks from Celina and Johannes. 
+It can be found on https://www.artsteps.com/view/64d4da0cbe0a5fbc97a1686d?currentUser.
 
 ![Artsteps Galery](./pixelpeople/art/artsteps.png)
 
@@ -71,7 +72,13 @@ We therefore present the results in a virtual gallery which nicely encompasses o
 
 ## Technical Details
 
-In this section, we discuss the technical details of the finetuning of stable diffusion. With the following script, one can finetune stable diffusion (the model `MODEL_NAME`) with the images in `INSTANCE_DIR`. The prompt associated to these images is `--instance-promt` and should be a unique identifier. We use the hyperparameters from https://huggingface.co/docs/diffusers/training/dreambooth
+In this section, we discuss the technical details of the finetuning of stable diffusion. To begin with, we showcase the workflow used to generate the results. 
+Then we mention some experiments we conducted that didn't make it into the exhibition.
+
+### Finetuning stable diffusion
+
+ With the following script, one can finetune stable diffusion (the model `MODEL_NAME`) with the images in `INSTANCE_DIR`. The prompt associated to these images is `--instance-promt` and should be a unique identifier. We use the hyperparameters from https://huggingface.co/docs/diffusers/training/dreambooth.
+The script can be found in [01_pretrain.sh](./pixelpeople/src/01_pretrain.sh).
 
 ```
 export MODEL_NAME="CompVis/stable-diffusion-v1-4"
@@ -94,6 +101,9 @@ accelerate launch ../diffusers/examples/dreambooth/train_dreambooth.py \
 ```
 
 The resulting model is stored in `OUTPUT_DIR`.
+
+### Inference
+Next, we want to generate an image from a prompt using the finetuned model. This text to image process is called inference.
 We generate images as follows:
 
 ```
@@ -107,14 +117,34 @@ image.save("output.png")
 ```
 
 with `model_id` the path to the previously saved model and `prompt` the image prompt.
+In [03_prompt.py](./pixelpeople/src/03_prompt.py) this process is implemented in a more user friendly way which uses `argparse` to read prompt and model from the command line parameters and proceeds to generate multiple, uniquely named images.
 
 ### Prior preserving and finetuning the textencoders and the UNet
 
-When finetuning on e.g. pictures of a "sks dog", the network can forget all other dogs. This can be avoided by feeding it other pictures of dogs while finetuning. This is called prior preservation. We managed to avoid the network "forgetting" all other dogs using prior preservation, however for other types of pictures (e.g. of us), the pictures of ourselves were also worse.
+When finetuning on e.g. pictures of a "sks dog", the network can forget all other dogs. This can be avoided by feeding it other pictures of dogs while finetuning. This is called prior preservation.
+We implemented this process following https://huggingface.co/docs/diffusers/training/dreambooth#finetuning-with-priorpreserving-loss in [05_prior_preserve.sh](./pixelpeople/src/05_prior_preserve.sh).
+We managed to avoid the network "forgetting" all other dogs using prior preservation, however for other types of pictures (e.g. of us), the pictures of ourselves were also worse.
 
 `--train_text_encoder` is supposed to improve faces by also training the text encoder. However, we couldn't reproduce these results.
 
 Therefore, we didn't use neither prior preserving nor UNet training for our final results.
+
+### Finetuning with two subjects
+We also tried to finetune the model on two subjects in order to be able to create mixtures of them. We tried two methods (both of them failed).
+
+* In [08_merge_train.sh](./pixelpeople/src/08_merge_train.sh) we tried to finetune a model that has already been finetuned on a first subject on a second subject, hoping to make the model "remember" both subjects. This approach failed, only "remembering" the second subject. 
+* In [09_two_subjects.sh](./pixelpeople/src/09_two_subjects.sh) we used a research script provided by dreambooth to finetune on multiple subjects. This approach also failed.
+
+In summary, we didn't manage to finetune stable diffusion on two new `instances` using dreambooth.
+
+### Experimenting with the diffusion process
+We also investigated the diffusion process hoping to be able to manipulate it to our needs.
+In [04_stable_diffusion.py](./pixelpeople/src/04_stable_diffusion.py) we implemented the diffusion process. 
+We visualized it in [06_noise_investigation.py](./pixelpeople/src/06_noise_investigation.py) and tried to "mix" multiple noise sources in [07_noise_investigation_loop.py](./pixelpeople/src/07_noise_investigation_loop.py).
+As stable diffusion is notoriously bad at producing text, we tried to give it a noisy version of the desired text as an input of the diffusion process, hoping this would results in better text generation on images, as in e.g. logos.
+We implemented this in [11_noise_to_im.py](./pixelpeople/src/11_noise_to_im.py).
+This resulted in much better text/logo representation, but also eliminated all creativity, leading to text in front of a boring background. Therefore we considered this approach as failed.
+
 
 ### Trivia
 
