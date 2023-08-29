@@ -33,7 +33,7 @@ Using the same technique, we copied the styles of two Dutch painters, Karel Appe
 
 ![Digital Meeting, Appel Fake](./pixelpeople/art/appel/style_appel2023-08-14_12:18:25_output_6.png)
 
-![Digital Summer Akademie, Bruegel](./pixelpeople/art/bruegel/guidance17_5/style_bruegel2023-08-14_09:59:21_output_5.png)
+![Digital Summer Akademie, Bruegel](./pixelpeople/art/bruegel/style_bruegel2023-08-14_09:59:21_output_5.png)
 
 Overall, we managed to imitate the style of various artists previously unknown to stable diffusion by finetuning it using dreambooth.
 
@@ -65,7 +65,7 @@ The exhibition can be viewed on a screen and controlled by walking around in the
 
 Our exhibition features the artworks in the styles of various Dutch artists, Abs pictures of us as well as paintings of us. In addition, two "guess the AI generated pictures" exhibitions feature show and generated artworks from Celina and Johannes:
 
-![Artsteps Galery](./selection/artsteps.png)
+![Artsteps Galery](./pixelpeople/art/artsteps.png)
 
 We therefore present the results in a virtual gallery which nicely encompasses our creative process. Sadly, we are not able to view it in VR. As we want to preserve our results in case of the website shutting down, we record the guided tour on video.
 
