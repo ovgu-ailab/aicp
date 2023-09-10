@@ -51,7 +51,7 @@ In summary, we had concrete goals (e.g. imitating an artist's style) as well as 
 
 ## Using web interfaces
 
-We also used publicly available online tools like https://clipdrop.co/stable-diffusion and https://playgroundai.com/ to generate images in the style of known artists. Of course this method doesn't work for unknown artists like Celina and Johannes. However, it was able to imitate the style of e.g. Rembrandt and Hieronymus Bosch and fuse it with our digital academy:
+We also used publicly available online tools like [ClipDrop](https://clipdrop.co/stable-diffusion) and [Playground AI](https://playgroundai.com/) to generate images in the style of known artists. Of course this method doesn't work for unknown artists like Celina and Johannes. However, it was able to imitate the style of e.g. Rembrandt and Hieronymus Bosch and fuse it with our digital academy:
 
 ![Hieronymus Bosch -  Digital Garden](./pixelpeople/art/hb-garden.jpg)
 
@@ -59,12 +59,12 @@ In our experience, playground AI had more settings, which allowed more custizabi
 
 ## Virtual Art Exhibition
 
-Finally, we used https://www.artsteps.com/ to exhibit our generated pieces. On this webservice, one is able to build a virtual museum in which you can walk freely. Textual descriptions can be attached to the images. We used ChatGPT to generate these and titles of some of the artworks. The descriptions are also be supplemented by audio. We used https://ttsmaker.com/ to convert the text to realistic voices. Furthermore, one can create a guided tour which leads you through the virtual museum.
+Finally, we used [Artsteps](https://www.artsteps.com/) to exhibit our generated pieces. On this webservice, one is able to build a virtual museum in which you can walk freely. Textual descriptions can be attached to the images. We used ChatGPT to generate these and titles of some of the artworks. The descriptions are also be supplemented by audio. We used [ttsmaker](https://ttsmaker.com/) to convert the text to realistic voices. Furthermore, one can create a guided tour which leads you through the virtual museum.
 
 The exhibition can be viewed on a screen and controlled by walking around in the virtual museum. In addition, an App is available. This App can be used in combination with Cardboard VR goggles to view the exhibition in 3D VR. Sadly, the App is not compatible with "dedicated" VR headsets like the Meta Quest.
 
 Our exhibition features the artworks in the styles of various Dutch artists, Abs pictures of us as well as paintings of us. In addition, two "guess the AI generated pictures" exhibitions feature show and generated artworks from Celina and Johannes. 
-It can be found on https://www.artsteps.com/view/64d4da0cbe0a5fbc97a1686d?currentUser.
+It can be found [here](https://www.artsteps.com/view/64d4da0cbe0a5fbc97a1686d?currentUser).
 
 ![Artsteps Galery](./pixelpeople/art/artsteps.png)
 
@@ -74,10 +74,11 @@ We therefore present the results in a virtual gallery which nicely encompasses o
 
 In this section, we discuss the technical details of the finetuning of stable diffusion. To begin with, we showcase the workflow used to generate the results. 
 Then we mention some experiments we conducted that didn't make it into the exhibition.
+We mostly followed the dreambooth tutorial on [huggingface](https://huggingface.co/docs/diffusers/training/dreambooth).
 
 ### Finetuning stable diffusion
 
- With the following script, one can finetune stable diffusion (the model `MODEL_NAME`) with the images in `INSTANCE_DIR`. The prompt associated to these images is `--instance-promt` and should be a unique identifier. We use the hyperparameters from https://huggingface.co/docs/diffusers/training/dreambooth.
+ With the following script, one can finetune stable diffusion (the model `MODEL_NAME`) with the images in `INSTANCE_DIR`. The prompt associated to these images is `--instance-promt` and should be a unique identifier. We use the hyperparameters from [huggingface](https://huggingface.co/docs/diffusers/training/dreambooth).
 The script can be found in [01_pretrain.sh](./pixelpeople/src/01_pretrain.sh).
 
 ```
@@ -122,7 +123,7 @@ In [03_prompt.py](./pixelpeople/src/03_prompt.py) this process is implemented in
 ### Prior preserving and finetuning the textencoders and the UNet
 
 When finetuning on e.g. pictures of a "sks dog", the network can forget all other dogs. This can be avoided by feeding it other pictures of dogs while finetuning. This is called prior preservation.
-We implemented this process following https://huggingface.co/docs/diffusers/training/dreambooth#finetuning-with-priorpreserving-loss in [05_prior_preserve.sh](./pixelpeople/src/05_prior_preserve.sh).
+We implemented this process following [https://huggingface.co/docs/diffusers/training/dreambooth#finetuning-with-priorpreserving-loss](https://huggingface.co/docs/diffusers/training/dreambooth#finetuning-with-priorpreserving-loss) in [05_prior_preserve.sh](./pixelpeople/src/05_prior_preserve.sh).
 We managed to avoid the network "forgetting" all other dogs using prior preservation, however for other types of pictures (e.g. of us), the pictures of ourselves were also worse.
 
 `--train_text_encoder` is supposed to improve faces by also training the text encoder. However, we couldn't reproduce these results.
